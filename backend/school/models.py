@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import transaction
 
 class User(AbstractUser):
     ROLE_CHOICES = [
@@ -33,6 +34,19 @@ class ClassRoom(models.Model):
 
     def __str__(self):
         return f"{self.school.code}-{self.code}-{self.year}"
+
+class StudentSequence(models.Model):
+    """Sequence counter to atomically generate per-(school, class, year) student sequence numbers."""
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+    class_code = models.CharField(max_length=32)
+    year = models.IntegerField()
+    last_seq = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('school', 'class_code', 'year')
+
+    def __str__(self):
+        return f"{self.school.code}-{self.class_code}-{self.year} => {self.last_seq}"
 
 class Student(models.Model):
     id = models.CharField(primary_key=True, max_length=64)  # StudentID
@@ -80,6 +94,9 @@ class CSVUpload(models.Model):
     file = models.FileField(upload_to='uploads/')
     status = models.CharField(max_length=32, default='pending')
     errors = models.JSONField(null=True, blank=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    created_count = models.IntegerField(default=0)
+    updated_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"CSVUpload {self.filename} ({self.status})"

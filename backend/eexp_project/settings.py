@@ -1,7 +1,10 @@
+# Add Celery and media settings
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ... existing settings above remain unchanged (this file replaces backend/eexp_project/settings.py)
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
 
@@ -74,3 +77,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # custom user model
 AUTH_USER_MODEL = 'school.User'
+
+# media (for uploaded CSVs)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Celery configuration
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
