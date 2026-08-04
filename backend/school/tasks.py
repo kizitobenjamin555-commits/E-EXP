@@ -4,7 +4,7 @@ import io
 from django.utils import timezone
 from django.db import transaction
 from .models import CSVUpload, School, ClassRoom, Student, Subject, Parent
-from .utils import parse_subjects_field, generate_student_id_and_seq, create_user_for_student
+from .utils import parse_subjects_field, generate_student_id_and_seq, create_user_for_student, DEFAULT_SCHOOL_CODE
 
 @shared_task(bind=True)
 def process_csv_upload(self, upload_id):
@@ -47,7 +47,7 @@ def process_csv_upload(self, upload_id):
                 classroom, _ = ClassRoom.objects.get_or_create(school=school, code=class_code, year=admission_year, defaults={'name': f"{class_code} - {admission_year}"})
 
                 # create user and student record
-                user, temp_pass = create_user_for_student(first_name, last_name, student_id)
+                user = create_user_for_student(first_name, last_name, student_id)
                 student = Student.objects.create(
                     id=student_id,
                     user=user,
