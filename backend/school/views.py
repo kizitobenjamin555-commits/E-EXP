@@ -1,11 +1,11 @@
-import csv
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.files.storage import default_storage
 from .models import CSVUpload
-from .serializers import CSVUploadSerializer
+from .serializers import CSVUploadSerializer, PasswordChangeSerializer
 from .tasks import process_csv_upload
+import csv
 import io
 
 class CSVUploadView(APIView):
@@ -90,3 +90,19 @@ class CSVUploadDryRunView(APIView):
             return Response({'create_count': create_count, 'update_count': update_count, 'errors': errors})
         except Exception as e:
             return Response({'detail': 'Error reading CSV file', 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordChangeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        old_password = serializer.validated_data['old_password']
+        new_password = serializer.validated_data['new_password']
+        # check old password already validated in serializer
+        user.set_password(new_password)
+        user.must_change_password = False
+        user.save()
+        return Response({'detail': 'Password changed successfully'})

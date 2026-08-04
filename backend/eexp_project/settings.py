@@ -1,10 +1,7 @@
-# Add Celery and media settings
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# ... existing settings above remain unchanged (this file replaces backend/eexp_project/settings.py)
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
 
@@ -29,6 +26,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'school.middleware.ForcePasswordChangeMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
