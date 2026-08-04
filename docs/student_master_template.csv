@@ -1,0 +1,2 @@
+first_name,last_name,dob,gender,class_code,admission_year,parent1_name,parent1_phone,parent1_email,subjects
+John,Doe,2012-05-10,M,SS1,2024,Jane Doe,0800000000,jane@example.com,ENG;MAT;SCI

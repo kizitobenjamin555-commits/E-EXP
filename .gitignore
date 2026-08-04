@@ -1,0 +1,17 @@
+.env
+__pycache__/
+*.pyc
+*.sqlite3
+/staticfiles/
+.env.local
+.vscode/
+.venv/
+node_modules/
+
+# Django
+*.log
+
+media/
+
+# Mac
+.DS_Store
